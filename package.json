@@ -1,0 +1,15 @@
+{
+  "title": "Tab Saver",
+  "name": "tab-saver",
+  "version": "0.0.1",
+  "description": "Saves tabs to a specified directory",
+  "main": "index.js",
+  "author": "Joel McCracken",
+  "engines": {
+    "firefox": ">=38.0a1"
+  },
+  "license": "MIT",
+  "keywords": [
+    "jetpack"
+  ]
+}
