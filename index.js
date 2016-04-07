@@ -1,5 +1,6 @@
 var self = require("sdk/self");
-var io_file = require("sdk/io/file");
+var file = require("sdk/io/file");
+var tabs = require("sdk/tabs");
 
 require("sdk/ui/button/action").ActionButton({
     id: "list-tabs",
@@ -9,9 +10,19 @@ require("sdk/ui/button/action").ActionButton({
 });
 
 function saveTabs() {
-    // var tabs = require("sdk/tabs");
-    // for (let tab of tabs)
-    //     console.log(tab.url);
-    console.log(io_file.read("~/.gitignore"))
-    // JSON.stringify({foo: 10}, null, 2);
+    if(!file.exists("~/browser-sessions")) {
+        file.mkpath("~/browser-sessions")
+    }
+
+
+    tabs_data = []
+    for (let tab of tabs) {
+        tabs_data.push(tab.url);
+    }
+
+    to_write = JSON.stringify(tabs_data, null, 2);
+
+    stream = file.open("~/browser-sessions/a-session.json", "w");
+    stream.write(to_write);
+    stream.close();
 }
