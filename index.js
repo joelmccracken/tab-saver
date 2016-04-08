@@ -4,6 +4,11 @@ var file = require("sdk/io/file");
 var panels = require("sdk/panel");
 var tabs = require("sdk/tabs");
 var { ToggleButton } = require('sdk/ui/button/toggle');
+const { identify } = require('sdk/ui/id');
+
+var windowsToNames = {};
+
+const browserSessionsPath = "~/browser-sessions";
 
 var button = ToggleButton({
     id: "list-tabs",
@@ -14,9 +19,14 @@ var button = ToggleButton({
 
 var panel = panels.Panel({
     contentURL: data.url("panel.html"),
-    contentScriptFile: [ // data.url('jquery-2.2.3.min.js'),
+    contentScriptFile: [ data.url('jquery-2.2.3.js'),
                         data.url("panel_script.js")],
     onHide: handleHide
+});
+
+panel.port.on("save-pressed", function(saveName){
+    windowsToNames[identify(tabs.activeTab.window)] = saveName;
+    writeTabData(saveName);
 });
 
 function handleChange(state) {
@@ -24,7 +34,18 @@ function handleChange(state) {
         panel.show({
             position: button
         });
+
+        var panelData = {
+            existingSessions:  readExistingSessions(),
+            currentWindowName: windowsToNames[identify(tabs.activeTab.window)]
+        };
+
+        panel.port.emit('panel-data', panelData);
     }
+}
+
+function readExistingSessions() {
+    return file.list(browserSessionsPath);
 }
 
 function handleHide() {
@@ -36,22 +57,26 @@ function saveTabs() {
     writeTabData();
 }
 
-function writeTabData(){
-    stream = file.open("~/browser-sessions/a-session.json", "w");
+function writeTabData(name){
+    stream = file.open(browserSessionsPath + "/" +name+".json", "w");
     stream.write(currentWindowTabData());
     stream.close();
 }
 
 function ensureDirectory() {
-    if(!file.exists("~/browser-sessions")) {
-        file.mkpath("~/browser-sessions");
+    if(!file.exists(browserSessionsPath)) {
+        file.mkpath(browserSessionsPath);
     }
 }
 
 function currentWindowTabData(){
     var tabs_data = [];
     for (let tab of tabs) {
-        tabs_data.push(tab.url);
+        var extracted = {
+            url: tab.url,
+            title: tab.title
+        };
+        tabs_data.push(extracted);
     }
 
     return JSON.stringify(tabs_data, null, 2);

@@ -1,7 +1,17 @@
 <html>
     <body>
-        <p>Please enter a name to use to save:</p>
-        <input type="text" id="window-name" />
-        <button id="save">save</button>
+        <div>
+            <p>Create New Session:</p>
+            <label for="window-name">Name:</label>
+            <input type="text" id="window-name" name="window-name"/>
+            <button id="save-new">save new</button>
+        </div>
+        <div>
+            <p>Overwrite or load a previous session:</p>
+            <select id="previous-sessions">
+            </select>
+            <button id="overwrite">overwrite</button>
+            <button id="load">load</button>
+        </div>
     </body>
 </html>
