@@ -147,7 +147,7 @@ function slightDefer(fn){
 
 function commitSessionChanges(sessionName){
     let cwd = expandPath(browserSessionsPath );
-    var git_add = child_process.spawn('/usr/local/bin/git', ['add', '.'], { cwd: cwd });
+    var git_add = child_process.spawn('/usr/local/bin/git', ['add', sessionName + '.json'], { cwd: cwd });
     git_add.on('close', function(){
         child_process.spawn('/usr/local/bin/git', ['commit', '-m', sessionName], { cwd: cwd });
     });
