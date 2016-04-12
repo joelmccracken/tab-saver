@@ -34,7 +34,6 @@ self.port.on("panel-data", function panelDataSetter(panelData){
 });
 
 function setPreviousSessions(existingSessionNames) {
-    console.log("existingSessionNames", existingSessionNames);
     let sessionOptions =
         existingSessionNames.map(function(sessionFilename){
             let match = sessionFilename.match(/(.*)\.json$/);

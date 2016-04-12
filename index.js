@@ -85,7 +85,6 @@ function tabsetOpener(windowName, tabsList) {
 
 function handleChange(state) {
     if (state.checked) {
-        console.log("handleChange happening");
         panel.show({
             position: button
         });
@@ -130,7 +129,6 @@ function currentWindowTabData(){
         };
         tabs_data.push(extracted);
     }
-    console.log(currentWindowTabs);
     return JSON.stringify(tabs_data, null, 2);
 }
 
