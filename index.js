@@ -41,7 +41,6 @@ panel.port.on("overwrite-pressed", function(saveName){
 
 panel.port.on("load-pressed", function(saveName){
     if(saveName != "") {
-        saveNameForCurrentWindow(saveName);
         loadSavedSession(saveName);
     }
 });
@@ -72,6 +71,7 @@ function tabsetOpener(windowName, tabsList) {
             url: firstPage || "about:home",
             onOpen: function(window) {
                 slightDefer(resolve);
+                saveNameForCurrentWindow(windowName);
             }
         });
     });
