@@ -80,7 +80,6 @@ function tabsetOpener(windowName, tabsList) {
         function(previous, current){
             return previous.then(function(){
                 return new Promise(function(resolve, reject){
-                    console.log("opening", current);
                     tabs.open(
                         {
                             url: current,
