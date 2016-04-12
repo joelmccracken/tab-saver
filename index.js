@@ -28,22 +28,32 @@ var panel = panels.Panel({
 });
 
 panel.port.on("save-pressed", function(saveName){
-    windowsToNames[identify(tabs.activeTab.window)] = saveName;
+    saveNameForCurrentWindow(saveName);
     writeCurrentWindowTabData(saveName);
     commitSessionChanges(saveName);
 });
 
 panel.port.on("overwrite-pressed", function(saveName){
-    windowsToNames[identify(tabs.activeTab.window)] = saveName;
+    saveNameForCurrentWindow(saveName);
     writeCurrentWindowTabData(saveName);
     commitSessionChanges(saveName);
 });
 
 panel.port.on("load-pressed", function(saveName){
     if(saveName != "") {
+        saveNameForCurrentWindow(saveName);
         loadSavedSession(saveName);
     }
 });
+
+
+function saveNameForCurrentWindow(name) {
+    windowsToNames[identify(tabs.activeTab.window)] = name;
+}
+function getNameForCurrentWindow() {
+    return windowsToNames[identify(tabs.activeTab.window)];
+}
+
 
 function loadSavedSession(saveName) {
     let content = file.read(browserSessionsPath + "/" + saveName + ".json");
@@ -91,7 +101,7 @@ function handleChange(state) {
 
         var panelData = {
             existingSessions:  readExistingSessions(),
-            currentWindowName: windowsToNames[identify(tabs.activeTab.window)]
+            currentWindowName: getNameForCurrentWindow()
         };
 
         panel.port.emit('panel-data', panelData);
