@@ -4,10 +4,10 @@ var file = require("sdk/io/file");
 var panels = require("sdk/panel");
 var tabs = require("sdk/tabs");
 var windows = require("sdk/windows").browserWindows;
-let { defer } = require("sdk/lang/functional");
 var { ToggleButton } = require('sdk/ui/button/toggle');
 const { identify } = require('sdk/ui/id');
 var { setTimeout } = require("sdk/timers");
+var child_process = require("sdk/system/child_process");
 
 var windowsToNames = {};
 
@@ -30,10 +30,13 @@ var panel = panels.Panel({
 panel.port.on("save-pressed", function(saveName){
     windowsToNames[identify(tabs.activeTab.window)] = saveName;
     writeCurrentWindowTabData(saveName);
+    commitSessionChanges(saveName);
 });
 
 panel.port.on("overwrite-pressed", function(saveName){
-    console.log(saveName);
+    windowsToNames[identify(tabs.activeTab.window)] = saveName;
+    writeCurrentWindowTabData(saveName);
+    commitSessionChanges(saveName);
 });
 
 panel.port.on("load-pressed", function(saveName){
@@ -117,20 +120,33 @@ function ensureDirectory() {
 }
 
 function currentWindowTabData(){
-    let currentWindow = tabs.activeTab.window.tabs;
+    let currentWindowTabs = tabs.activeTab.window.tabs;
 
     var tabs_data = [];
-    for (let tab of currentWindow) {
+    for (let tab of currentWindowTabs) {
         var extracted = {
             url: tab.url,
             title: tab.title
         };
         tabs_data.push(extracted);
     }
-
+    console.log(currentWindowTabs);
     return JSON.stringify(tabs_data, null, 2);
 }
 
 function slightDefer(fn){
     setTimeout(fn, 200);
+}
+
+function commitSessionChanges(sessionName){
+    let cwd = expandPath(browserSessionsPath );
+    var git_add = child_process.spawn('/usr/local/bin/git', ['add', '.'], { cwd: cwd });
+    git_add.on('close', function(){
+        child_process.spawn('/usr/local/bin/git', ['commit', '-m', sessionName], { cwd: cwd });
+    });
+}
+
+
+function expandPath(path) {
+    return file.join(path, "");
 }
